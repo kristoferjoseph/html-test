@@ -16,6 +16,14 @@ class TestOutput extends HTMLElement {
     this.setupEventListeners();
   }
 
+  disconnectedCallback() {
+    document.removeEventListener('tap-start', this.handleTestStart);
+    document.removeEventListener('tap-output', this.handleTapOutput);
+    document.removeEventListener('tap-pass', this.handleTestPass);
+    document.removeEventListener('tap-fail', this.handleTestFail);
+    document.removeEventListener('tap-finish', this.handleTestFinish);
+  }
+
   setupEventListeners() {
     document.addEventListener('tap-start', (event) => {
       this.handleTestStart(event.detail);
@@ -81,12 +89,44 @@ class TestOutput extends HTMLElement {
       progressElement.style.width = `${percentage}%`;
     } else {
       const success = this.testResults.failed === 0;
-      statusElement.textContent = success
+      const statusText = success
         ? `✓ All tests passed (${this.testResults.passed}/${this.testResults.total})`
         : `✗ ${this.testResults.failed} of ${this.testResults.total} tests failed`;
+      
+      statusElement.textContent = statusText;
       statusElement.className = success ? 'status success' : 'status failure';
       progressElement.style.width = '100%';
+      
+      // Announce test completion to screen readers
+      this.announceToScreenReader(statusText);
     }
+  }
+
+  announceToScreenReader(message) {
+    // Create temporary announcement element for screen readers
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'assertive');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.setAttribute('class', 'sr-only');
+    announcement.style.position = 'absolute';
+    announcement.style.width = '1px';
+    announcement.style.height = '1px';
+    announcement.style.padding = '0';
+    announcement.style.margin = '-1px';
+    announcement.style.overflow = 'hidden';
+    announcement.style.clip = 'rect(0, 0, 0, 0)';
+    announcement.style.whiteSpace = 'nowrap';
+    announcement.style.border = '0';
+    announcement.textContent = message;
+    
+    this.shadowRoot.appendChild(announcement);
+    
+    // Remove announcement after screen readers have processed it
+    setTimeout(() => {
+      if (announcement.parentNode) {
+        announcement.parentNode.removeChild(announcement);
+      }
+    }, 1000);
   }
 
   updateOutput() {
@@ -158,7 +198,7 @@ class TestOutput extends HTMLElement {
         }
 
         .status.running {
-          color: #6c757d;
+          color: #495057;
         }
 
         .status.success {
@@ -213,18 +253,18 @@ class TestOutput extends HTMLElement {
 
         .line.summary {
           font-weight: 600;
-          color: #495057;
+          color: #343a40;
           background: #f8f9fa;
-          border-left-color: #6c757d;
+          border-left-color: #495057;
         }
 
         .line.meta {
-          color: #6c757d;
+          color: #495057;
           font-style: italic;
         }
 
         .line.detail {
-          color: #6c757d;
+          color: #495057;
           background: #f8f9fa;
           font-size: 12px;
         }
@@ -232,18 +272,18 @@ class TestOutput extends HTMLElement {
         .empty-state {
           padding: 32px 16px;
           text-align: center;
-          color: #6c757d;
+          color: #495057;
         }
       </style>
       
       <div class="header">
-        <div class="status">Ready</div>
+        <div class="status" role="status" aria-live="polite" aria-atomic="true">Ready</div>
         <div class="progress">
           <div class="progress-bar"></div>
         </div>
       </div>
       
-      <div class="output">
+      <div class="output" role="log" aria-label="Test execution output" aria-live="polite">
         <div class="empty-state">No test output yet. Click "Run Tests" to begin.</div>
       </div>
     `;
