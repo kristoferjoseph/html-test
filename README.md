@@ -115,15 +115,185 @@ await runTests();
 
 ## Available Assertions
 
-- `assert.exists(selector)` - Element exists in DOM
-- `assert.text(selector, text)` - Element text matches
-- `assert.value(selector, value)` - Input value matches
-- `assert.visible(selector)` - Element is visible
-- `assert.hidden(selector)` - Element is hidden
-- `assert.disabled(selector)` - Element is disabled
-- `assert.hasClass(selector, className)` - Element has CSS class
-- `assert.count(selector, number)` - Number of matching elements
-- And many more...
+### DOM Element Assertions
+
+**`assert.exists(selector)`** - Verify element exists in DOM
+```javascript
+test('should find submit button', () => {
+  assert.exists('#submit-btn');
+});
+```
+
+**`assert.notExists(selector)`** - Verify element does not exist
+```javascript
+test('should not have error message initially', () => {
+  assert.notExists('.error-message');
+});
+```
+
+**`assert.count(selector, expectedCount)`** - Count matching elements
+```javascript
+test('should have 3 navigation items', () => {
+  assert.count('nav li', 3);
+});
+```
+
+### Text Content Assertions
+
+**`assert.text(selector, expectedText)`** - Exact text match
+```javascript
+test('should display welcome message', () => {
+  assert.text('#welcome', 'Welcome to our site!');
+});
+```
+
+**`assert.textContains(selector, expectedText)`** - Partial text match
+```javascript
+test('should contain user name in heading', () => {
+  assert.textContains('h1', 'John');
+});
+```
+
+### Attribute Assertions
+
+**`assert.attribute(selector, attributeName, expectedValue)`** - Exact attribute value
+```javascript
+test('should have correct href attribute', () => {
+  assert.attribute('#home-link', 'href', '/home');
+});
+```
+
+**`assert.hasAttribute(selector, attributeName)`** - Attribute exists
+```javascript
+test('should have required attribute', () => {
+  assert.hasAttribute('#email', 'required');
+});
+```
+
+**`assert.notHasAttribute(selector, attributeName)`** - Attribute does not exist
+```javascript
+test('should not have disabled attribute', () => {
+  assert.notHasAttribute('#submit', 'disabled');
+});
+```
+
+### Visibility Assertions
+
+**`assert.visible(selector)`** - Element is visible (not display:none, visibility:hidden, or opacity:0)
+```javascript
+test('should show success message', () => {
+  assert.visible('#success-alert');
+});
+```
+
+**`assert.hidden(selector)`** - Element is hidden
+```javascript
+test('should hide loading spinner', () => {
+  assert.hidden('#loading-spinner');
+});
+```
+
+### Form Element Assertions
+
+**`assert.disabled(selector)`** - Form element is disabled
+```javascript
+test('should disable submit when form invalid', () => {
+  assert.disabled('#submit-btn');
+});
+```
+
+**`assert.enabled(selector)`** - Form element is enabled
+```javascript
+test('should enable button when form valid', () => {
+  assert.enabled('#submit-btn');
+});
+```
+
+**`assert.value(selector, expectedValue)`** - Input/textarea value
+```javascript
+test('should have default email value', () => {
+  assert.value('#email', 'user@example.com');
+});
+```
+
+**`assert.checked(selector)`** - Checkbox/radio is checked
+```javascript
+test('should check terms checkbox', () => {
+  assert.checked('#terms-accepted');
+});
+```
+
+**`assert.notChecked(selector)`** - Checkbox/radio is not checked
+```javascript
+test('should not check newsletter by default', () => {
+  assert.notChecked('#newsletter-signup');
+});
+```
+
+### CSS Class Assertions
+
+**`assert.hasClass(selector, className)`** - Element has CSS class
+```javascript
+test('should have active class on current tab', () => {
+  assert.hasClass('#tab-home', 'active');
+});
+```
+
+**`assert.notHasClass(selector, className)`** - Element does not have CSS class
+```javascript
+test('should not have error class initially', () => {
+  assert.notHasClass('#form', 'has-error');
+});
+```
+
+### CSS Selector Assertions
+
+**`assert.matches(selector, cssSelector)`** - Element matches CSS selector
+```javascript
+test('should match pseudo-class selector', () => {
+  assert.matches('#input', ':focus');
+});
+```
+
+### Value Comparison Assertions
+
+**`assert.isEqual(actual, expected)`** - Strict equality comparison
+```javascript
+test('should calculate correct total', () => {
+  const total = calculateTotal([10, 20, 30]);
+  assert.isEqual(total, 60);
+});
+```
+
+**`assert.isTrue(value)`** - Value is exactly true
+```javascript
+test('should validate email format', () => {
+  assert.isTrue(isValidEmail('test@example.com'));
+});
+```
+
+**`assert.isFalse(value)`** - Value is exactly false
+```javascript
+test('should reject invalid email', () => {
+  assert.isFalse(isValidEmail('invalid-email'));
+});
+```
+
+### Error Handling Assertions
+
+**`assert.throws(fn, expectedError?)`** - Function throws an error
+```javascript
+test('should throw error for invalid input', () => {
+  assert.throws(() => {
+    processData(null);
+  }, TypeError);
+});
+
+// Or just verify that any error is thrown
+test('should throw on empty string', () => {
+  assert.throws(() => validateRequired(''));
+});
+```
 
 ## TAP Output
 
