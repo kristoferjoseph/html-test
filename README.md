@@ -1,17 +1,17 @@
 # HTML Test Framework
 
-A vanilla JavaScript testing framework for HTML applications using ES modules, Web Components, and TAP-compliant output.
+A generalized vanilla JavaScript testing framework for HTML applications. Load and test HTML files from any location with ES modules, Web Components, and TAP-compliant output.
 
 ## Features
 
-- **Vanilla JavaScript**: Zero dependencies, follows web standards
-- **ES Modules**: Native browser module loading with import maps
-- **TAP v13 Compliance**: Standard test output format for CI/CD integration
-- **Web Components**: Custom elements for test output and UI
-- **Architect Serverless**: AWS Lambda-based backend with static file serving
-- **Swiss Design**: Minimal, clean Dieter Rams-inspired interface
-- **Auto-run Tests**: Tests execute automatically when pages load
-- **DOM Assertions**: 20+ assertion methods using native browser APIs
+- **Configurable Test Sources**: Load HTML test files from local or remote locations
+- **Standalone Assertion Library**: Browser-native DOM assertions with zero dependencies
+- **Flexible Test Runner**: Programmatic API for custom CI/CD integration
+- **TAP v13 Compliance**: Standard test output format for CI systems
+- **ES Modules**: Native browser module loading, no build tools required
+- **Web Components**: Custom elements for rich test UI
+- **Auto-Discovery**: Automatically finds and runs tests in HTML files
+- **Multiple Configuration Methods**: JSON, programmatic, or DOM-based config
 
 ## Quick Start
 
@@ -29,18 +29,64 @@ A vanilla JavaScript testing framework for HTML applications using ES modules, W
    - Main page: `http://localhost:3333`
    - Test pages: `http://localhost:3333/test/example`
 
+## Configuration
+
+### 1. JSON Configuration in HTML
+```html
+<script type="application/json" data-test-config>
+{
+  "testFiles": [
+    "/tests/homepage.test.html",
+    "/tests/contact.test.html"
+  ],
+  "autoRun": true,
+  "remoteBaseUrl": "https://my-tests.com/"
+}
+</script>
+```
+
+### 2. Programmatic Configuration
+```javascript
+import { TestRunner, TestConfig } from '/_static/lib/test-runner.js';
+
+const config = new TestConfig({
+  testFiles: [
+    'https://example.com/tests/api.test.html',
+    '/local/tests/ui.test.html'
+  ],
+  autoRun: false,
+  ciMode: true
+});
+
+const runner = new TestRunner(config);
+await runner.runAllTests();
+```
+
+### 3. Auto-Setup
+```javascript
+import { TestConfig } from '/_static/lib/test-config.js';
+
+// Loads config from DOM and sets up UI automatically
+const config = await TestConfig.fromElement();
+const runner = new TestRunner(config);
+runner.setupUI();
+```
+
 ## Project Structure
 
 ```
 ├── app.arc                 # Architect manifest
 ├── src/http/              # HTTP route handlers
-│   ├── get-index/         # Main test runner page
-│   └── get-test-catchall/ # Individual test pages
 ├── public/               # Static assets served at /_static/
-│   ├── modules/          # ES modules (test framework, assertions, TAP reporter)
-│   ├── components/       # Web Components (test output UI)
+│   ├── lib/              # Standalone modules
+│   │   ├── browser-assertions.js  # Assertion library
+│   │   ├── test-config.js         # Configuration system
+│   │   └── test-runner.js         # Generalized test runner
+│   ├── modules/          # Framework modules
+│   ├── components/       # Web Components
+│   ├── examples/         # Usage examples
 │   └── styles/           # CSS styling
-└── CLAUDE.md            # Project guidelines and architecture
+└── README.md
 ```
 
 ## Writing Tests

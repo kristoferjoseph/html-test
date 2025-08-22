@@ -1,7 +1,7 @@
 'use strict';
 
 import { TAPReporter } from './tap-reporter.js';
-import { assert } from './assertions.js';
+import { assert } from '../lib/browser-assertions.js';
 
 class TestSuite {
   constructor() {
