@@ -44,7 +44,7 @@ export class TestRunner {
     // Create a temporary iframe to safely parse and execute test HTML
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
-    iframe.sandbox = 'allow-scripts allow-same-origin';
+    iframe.sandbox = 'allow-scripts';
 
     return new Promise((resolve) => {
       iframe.onload = () => {
@@ -81,6 +81,9 @@ export class TestRunner {
   }
 
   injectTestRuntime(html) {
+    // Sanitize HTML to prevent XSS attacks
+    const sanitizedHtml = this.sanitizeHTML(html);
+    
     // Inject our test runtime into the HTML
     const runtimeScript = `
       <script type="module">
@@ -100,7 +103,21 @@ export class TestRunner {
     `;
 
     // Insert runtime script before any existing scripts
-    return html.replace(/<head>/i, `<head>${runtimeScript}`);
+    return sanitizedHtml.replace(/<head>/i, `<head>${runtimeScript}`);
+  }
+
+  sanitizeHTML(html) {
+    // Basic HTML sanitization to prevent common XSS vectors
+    // Remove dangerous script tags and event handlers
+    let sanitized = html
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+      .replace(/javascript:/gi, '')
+      .replace(/<iframe\b[^>]*>/gi, '')
+      .replace(/<object\b[^>]*>/gi, '')
+      .replace(/<embed\b[^>]*>/gi, '');
+    
+    return sanitized;
   }
 
   extractTestsFromIframe(iframe, url) {
@@ -124,8 +141,8 @@ export class TestRunner {
 
     try {
       // Set the iframe document as the test context
-      const originalDocument = global.document;
-      global.document = test.iframe;
+      const originalDocument = window.document;
+      window.document = test.iframe;
 
       // Run the test function
       if (test.fn.constructor.name === 'AsyncFunction') {
@@ -135,7 +152,7 @@ export class TestRunner {
       }
 
       // Restore original document
-      global.document = originalDocument;
+      window.document = originalDocument;
 
       const endTime = performance.now();
       const duration = endTime - startTime;

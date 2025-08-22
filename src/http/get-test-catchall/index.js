@@ -15,23 +15,23 @@ export async function handler(req) {
     <header class="header">
         <h1>Test: ${testPath}</h1>
         <div class="test-controls">
-            <button id="run-tests" class="run-button">Run Tests</button>
-            <button id="clear-output" class="clear-button">Clear</button>
-            <a href="/" class="back-link">← Back to Main</a>
+            <button id="run-tests" class="run-button" aria-label="Run all tests">Run Tests</button>
+            <button id="clear-output" class="clear-button" aria-label="Clear test output">Clear</button>
+            <a href="/" class="back-link" aria-label="Return to main test page">← Back to Main</a>
         </div>
     </header>
     
     <main class="main">
-        <section class="test-area">
-            <h2>Test Content for ${testPath}</h2>
+        <section class="test-area" aria-labelledby="test-content-heading">
+            <h2 id="test-content-heading">Test Content for ${testPath}</h2>
             <div id="test-content">
                 <!-- Dynamic test content will be loaded here -->
                 <p>Test content for ${testPath} will be loaded here.</p>
             </div>
         </section>
         
-        <section class="output-area">
-            <test-output id="test-output"></test-output>
+        <section class="output-area" aria-labelledby="test-output-heading">
+            <test-output id="test-output" role="log" aria-live="polite" aria-label="Test results output"></test-output>
         </section>
     </main>
 
@@ -82,7 +82,8 @@ export async function handler(req) {
     statusCode: 200,
     headers: {
       'Content-Type': 'text/html',
-      'Cache-Control': 'no-cache'
+      'Cache-Control': 'no-cache',
+      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src 'self';"
     },
     body: html
   };

@@ -13,14 +13,14 @@ export async function handler() {
     <header class="header">
         <h1>HTML Test Runner</h1>
         <div class="test-controls">
-            <button id="run-tests" class="run-button">Run Tests</button>
-            <button id="clear-output" class="clear-button">Clear</button>
+            <button id="run-tests" class="run-button" aria-label="Run all tests">Run Tests</button>
+            <button id="clear-output" class="clear-button" aria-label="Clear test output">Clear</button>
         </div>
     </header>
 
     <main class="main">
-        <section class="test-area">
-            <h2>Test Content</h2>
+        <section class="test-area" aria-labelledby="test-content-heading">
+            <h2 id="test-content-heading">Test Content</h2>
             <div id="test-content">
                 <p id="test-paragraph">This is a test paragraph.</p>
                 <button id="test-button" disabled>Test Button</button>
@@ -34,8 +34,8 @@ export async function handler() {
             </div>
         </section>
 
-        <section class="output-area">
-          <test-output id="test-output">
+        <section class="output-area" aria-labelledby="test-output-heading">
+          <test-output id="test-output" role="log" aria-live="polite" aria-label="Test results output">
             <template shadowrootmode="open">
               <style>
                 :host {
@@ -59,7 +59,7 @@ export async function handler() {
                 }
 
                 .status.running {
-                  color: #6c757d;
+                  color: #495057;
                 }
 
                 .status.success {
@@ -114,18 +114,18 @@ export async function handler() {
 
                 .line.summary {
                   font-weight: 600;
-                  color: #495057;
+                  color: #343a40;
                   background: #f8f9fa;
-                  border-left-color: #6c757d;
+                  border-left-color: #495057;
                 }
 
                 .line.meta {
-                  color: #6c757d;
+                  color: #495057;
                   font-style: italic;
                 }
 
                 .line.detail {
-                  color: #6c757d;
+                  color: #495057;
                   background: #f8f9fa;
                   font-size: 12px;
                 }
@@ -133,12 +133,12 @@ export async function handler() {
                 .empty-state {
                   padding: 32px 16px;
                   text-align: center;
-                  color: #6c757d;
+                  color: #495057;
                 }
               </style>
 
               <div class="header">
-                <div class="status">Ready</div>
+                <div class="status" role="status" aria-live="polite">Ready</div>
                 <div class="progress">
                   <div class="progress-bar"></div>
                 </div>
@@ -224,7 +224,8 @@ export async function handler() {
     statusCode: 200,
     headers: {
       'Content-Type': 'text/html',
-      'Cache-Control': 'no-cache'
+      'Cache-Control': 'no-cache',
+      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src 'self';"
     },
     body: html
   };
