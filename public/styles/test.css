@@ -33,7 +33,7 @@ h1 {
 h2 {
   font-size: 1.5rem;
   font-weight: 400;
-  color: #495057;
+  color: #343a40;
 }
 
 /* Layout */
@@ -139,7 +139,7 @@ button {
 }
 
 .back-link {
-  color: #6c757d;
+  color: #495057;
   text-decoration: none;
   font-size: 0.875rem;
   padding: 0.5rem 0;
@@ -148,13 +148,13 @@ button {
 }
 
 .back-link:hover {
-  color: #495057;
+  color: #343a40;
 }
 
 /* Test content styling */
 #test-content p {
   margin: 0 0 1rem 0;
-  color: #495057;
+  color: #343a40;
 }
 
 #test-content button {
