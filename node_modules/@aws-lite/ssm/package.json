@@ -1,0 +1,22 @@
+{
+  "name": "@aws-lite/ssm",
+  "version": "0.2.5",
+  "description": "Official `aws-lite` plugin for SSM",
+  "homepage": "https://aws-lite.org/services/ssm",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aws-lite/aws-lite.git",
+    "directory": "plugins/ssm"
+  },
+  "bugs": "https://github.com/aws-lite/aws-lite/issues",
+  "main": "src/index.mjs",
+  "engines": {
+    "node": ">=16"
+  },
+  "author": "@architect",
+  "license": "Apache-2.0",
+  "files": [
+    "src"
+  ],
+  "scripts": {}
+}

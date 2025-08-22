@@ -1,346 +1,311 @@
-# HTML Test Framework
+# arc-plugin-html-test
 
-A generalized vanilla JavaScript testing framework for HTML applications. Load and test HTML files from any location with ES modules, Web Components, and TAP-compliant output.
+An Architect plugin for vanilla JavaScript HTML testing with TAP output and CI/CD integration.
 
 ## Features
 
-- **Configurable Test Sources**: Load HTML test files from local or remote locations
-- **Standalone Assertion Library**: Browser-native DOM assertions with zero dependencies
-- **Flexible Test Runner**: Programmatic API for custom CI/CD integration
+- **Zero Build Tools**: Pure vanilla JavaScript with ES modules and Web Components
+- **Declarative Shadow DOM**: Modern web standards-compliant component architecture
+- **Configurable Test Discovery**: Automatically finds HTML test files in your project
 - **TAP v13 Compliance**: Standard test output format for CI systems
-- **ES Modules**: Native browser module loading, no build tools required
-- **Web Components**: Custom elements for rich test UI
-- **Auto-Discovery**: Automatically finds and runs tests in HTML files
-- **Multiple Configuration Methods**: JSON, programmatic, or DOM-based config
+- **CI/CD Integration**: JSON and TAP endpoints for automated testing pipelines
+- **Live Reload**: File watching during development
+- **Comprehensive Assertions**: 19+ DOM-specific assertion methods
 
-## Quick Start
+## Installation
 
-1. **Install dependencies**:
-   ```bash
-   npm install -g @architect/architect
-   ```
+```bash
+npm install arc-plugin-html-test
+```
 
-2. **Start development server**:
-   ```bash
-   arc sandbox
-   ```
+## Usage
 
-3. **Visit the test runner**:
-   - Main page: `http://localhost:3333`
-   - Test pages: `http://localhost:3333/test/example`
+### 1. Add Plugin to Your Architect Project
 
-## Configuration
+Add the plugin to your `app.arc` manifest:
 
-### 1. JSON Configuration in HTML
+```arc
+@app
+my-app
+
+@plugins
+arc-plugin-html-test
+
+@html-test
+directory tests/html
+patterns *.test.html *.spec.html
+output-format tap
+ci-mode true
+auto-run true
+
+@http
+# Your existing routes
+```
+
+### 2. Configuration Options
+
+All configuration is optional. Here are the defaults:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `directory` | `tests/html` | Directory to scan for test files |
+| `patterns` | `*.test.html *.spec.html` | File patterns to match |
+| `output-format` | `tap` | Output format (currently only TAP) |
+| `ci-mode` | `false` | Enable CI/CD integration features |
+| `auto-run` | `true` | Auto-run tests when page loads |
+
+### 3. Create Test Files
+
+Create HTML test files in your configured directory:
+
 ```html
-<script type="application/json" data-test-config>
-{
-  "testFiles": [
-    "/tests/homepage.test.html",
-    "/tests/contact.test.html"
-  ],
-  "autoRun": true,
-  "remoteBaseUrl": "https://my-tests.com/"
-}
-</script>
+<!-- tests/html/example.test.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Example Test</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Hello World</h1>
+        <button id="click-me">Click Me</button>
+    </div>
+
+    <script type="module">
+        // Tests are defined inline in the HTML file
+        test('should have main heading', () => {
+            assert.exists('#app h1');
+            assert.text('#app h1', 'Hello World');
+        });
+
+        test('should have clickable button', () => {
+            assert.exists('#click-me');
+            assert.enabled('#click-me');
+        });
+
+        test('async test example', async () => {
+            await new Promise(resolve => setTimeout(resolve, 10));
+            assert.exists('#app');
+        });
+    </script>
+</body>
+</html>
 ```
 
-### 2. Programmatic Configuration
-```javascript
-import { TestRunner, TestConfig } from '/_static/lib/test-runner.js';
+### 4. Run Tests
 
-const config = new TestConfig({
-  testFiles: [
-    'https://example.com/tests/api.test.html',
-    '/local/tests/ui.test.html'
-  ],
-  autoRun: false,
-  ciMode: true
-});
+Start your Architect development server:
 
-const runner = new TestRunner(config);
-await runner.runAllTests();
+```bash
+arc sandbox
 ```
 
-### 3. Auto-Setup
-```javascript
-import { TestConfig } from '/_static/lib/test-config.js';
-
-// Loads config from DOM and sets up UI automatically
-const config = await TestConfig.fromElement();
-const runner = new TestRunner(config);
-runner.setupUI();
-```
-
-## Project Structure
-
-```
-├── app.arc                 # Architect manifest
-├── src/http/              # HTTP route handlers
-├── public/               # Static assets served at /_static/
-│   ├── lib/              # Standalone modules
-│   │   ├── browser-assertions.js  # Assertion library
-│   │   ├── test-config.js         # Configuration system
-│   │   └── test-runner.js         # Generalized test runner
-│   ├── modules/          # Framework modules
-│   ├── components/       # Web Components
-│   ├── examples/         # Usage examples
-│   └── styles/           # CSS styling
-└── README.md
-```
-
-## Writing Tests
-
-```javascript
-import { test, assert } from '/_static/modules/test-framework.js';
-
-// Simple assertions
-test('should find element', () => {
-  assert.exists('#my-element');
-});
-
-test('should verify text content', () => {
-  assert.text('#title', 'Expected Title');
-});
-
-// Async tests
-test('async operation', async () => {
-  await new Promise(resolve => setTimeout(resolve, 100));
-  assert.exists('#loaded-content');
-});
-
-// Run all tests
-await runTests();
-```
+Visit the test runner interface:
+- **Main Interface**: `http://localhost:3333/html-test`
+- **Individual Test**: `http://localhost:3333/html-test/file/example.test.html`
 
 ## Available Assertions
 
+The plugin includes a comprehensive assertion library with 19+ methods:
+
 ### DOM Element Assertions
 
-**`assert.exists(selector)`** - Verify element exists in DOM
 ```javascript
-test('should find submit button', () => {
-  assert.exists('#submit-btn');
-});
-```
-
-**`assert.notExists(selector)`** - Verify element does not exist
-```javascript
-test('should not have error message initially', () => {
-  assert.notExists('.error-message');
-});
-```
-
-**`assert.count(selector, expectedCount)`** - Count matching elements
-```javascript
-test('should have 3 navigation items', () => {
-  assert.count('nav li', 3);
-});
+assert.exists('#selector')              // Element exists
+assert.notExists('#selector')           // Element doesn't exist  
+assert.count('li', 3)                   // Count matching elements
 ```
 
 ### Text Content Assertions
 
-**`assert.text(selector, expectedText)`** - Exact text match
 ```javascript
-test('should display welcome message', () => {
-  assert.text('#welcome', 'Welcome to our site!');
-});
-```
-
-**`assert.textContains(selector, expectedText)`** - Partial text match
-```javascript
-test('should contain user name in heading', () => {
-  assert.textContains('h1', 'John');
-});
+assert.text('#title', 'Expected Text')          // Exact text match
+assert.textContains('#desc', 'partial text')    // Partial text match
 ```
 
 ### Attribute Assertions
 
-**`assert.attribute(selector, attributeName, expectedValue)`** - Exact attribute value
 ```javascript
-test('should have correct href attribute', () => {
-  assert.attribute('#home-link', 'href', '/home');
-});
-```
-
-**`assert.hasAttribute(selector, attributeName)`** - Attribute exists
-```javascript
-test('should have required attribute', () => {
-  assert.hasAttribute('#email', 'required');
-});
-```
-
-**`assert.notHasAttribute(selector, attributeName)`** - Attribute does not exist
-```javascript
-test('should not have disabled attribute', () => {
-  assert.notHasAttribute('#submit', 'disabled');
-});
+assert.attribute('#link', 'href', '/path')      // Exact attribute value
+assert.hasAttribute('#input', 'required')       // Attribute exists
+assert.notHasAttribute('#input', 'disabled')    // Attribute doesn't exist
 ```
 
 ### Visibility Assertions
 
-**`assert.visible(selector)`** - Element is visible (not display:none, visibility:hidden, or opacity:0)
 ```javascript
-test('should show success message', () => {
-  assert.visible('#success-alert');
-});
-```
-
-**`assert.hidden(selector)`** - Element is hidden
-```javascript
-test('should hide loading spinner', () => {
-  assert.hidden('#loading-spinner');
-});
+assert.visible('#element')              // Element is visible
+assert.hidden('#element')               // Element is hidden
 ```
 
 ### Form Element Assertions
 
-**`assert.disabled(selector)`** - Form element is disabled
 ```javascript
-test('should disable submit when form invalid', () => {
-  assert.disabled('#submit-btn');
-});
-```
-
-**`assert.enabled(selector)`** - Form element is enabled
-```javascript
-test('should enable button when form valid', () => {
-  assert.enabled('#submit-btn');
-});
-```
-
-**`assert.value(selector, expectedValue)`** - Input/textarea value
-```javascript
-test('should have default email value', () => {
-  assert.value('#email', 'user@example.com');
-});
-```
-
-**`assert.checked(selector)`** - Checkbox/radio is checked
-```javascript
-test('should check terms checkbox', () => {
-  assert.checked('#terms-accepted');
-});
-```
-
-**`assert.notChecked(selector)`** - Checkbox/radio is not checked
-```javascript
-test('should not check newsletter by default', () => {
-  assert.notChecked('#newsletter-signup');
-});
+assert.disabled('#submit')              // Form element is disabled
+assert.enabled('#submit')               // Form element is enabled
+assert.value('#input', 'expected')      // Input/textarea value
+assert.checked('#checkbox')             // Checkbox/radio is checked
+assert.notChecked('#checkbox')          // Checkbox/radio is not checked
 ```
 
 ### CSS Class Assertions
 
-**`assert.hasClass(selector, className)`** - Element has CSS class
 ```javascript
-test('should have active class on current tab', () => {
-  assert.hasClass('#tab-home', 'active');
-});
-```
-
-**`assert.notHasClass(selector, className)`** - Element does not have CSS class
-```javascript
-test('should not have error class initially', () => {
-  assert.notHasClass('#form', 'has-error');
-});
-```
-
-### CSS Selector Assertions
-
-**`assert.matches(selector, cssSelector)`** - Element matches CSS selector
-```javascript
-test('should match pseudo-class selector', () => {
-  assert.matches('#input', ':focus');
-});
+assert.hasClass('#element', 'active')   // Element has CSS class
+assert.notHasClass('#element', 'error') // Element doesn't have class
 ```
 
 ### Value Comparison Assertions
 
-**`assert.isEqual(actual, expected)`** - Strict equality comparison
 ```javascript
-test('should calculate correct total', () => {
-  const total = calculateTotal([10, 20, 30]);
-  assert.isEqual(total, 60);
-});
-```
-
-**`assert.isTrue(value)`** - Value is exactly true
-```javascript
-test('should validate email format', () => {
-  assert.isTrue(isValidEmail('test@example.com'));
-});
-```
-
-**`assert.isFalse(value)`** - Value is exactly false
-```javascript
-test('should reject invalid email', () => {
-  assert.isFalse(isValidEmail('invalid-email'));
-});
+assert.isEqual(actual, expected)        // Strict equality
+assert.isTrue(value)                    // Value is exactly true
+assert.isFalse(value)                   // Value is exactly false
 ```
 
 ### Error Handling Assertions
 
-**`assert.throws(fn, expectedError?)`** - Function throws an error
 ```javascript
-test('should throw error for invalid input', () => {
-  assert.throws(() => {
-    processData(null);
-  }, TypeError);
-});
-
-// Or just verify that any error is thrown
-test('should throw on empty string', () => {
-  assert.throws(() => validateRequired(''));
-});
-```
-
-## TAP Output
-
-Tests output TAP v13 format to both console and DOM:
-
-```
-TAP version 13
-1..8
-ok 1 - should find test paragraph
-ok 2 - should verify paragraph text
-ok 3 - should check button is disabled
-ok 4 - should verify input value
-ok 5 - should count list items
-ok 6 - should check element has class
-ok 7 - should verify hidden element
-ok 8 - async test example
-# PASS 8/8
+assert.throws(() => {                   // Function throws error
+    riskyFunction();
+}, TypeError);
 ```
 
 ## CI/CD Integration
 
-The framework outputs TAP-compliant results to stdout, making it compatible with CI systems:
+The plugin provides endpoints for automated testing:
+
+### JSON Results Endpoint
 
 ```bash
-# Example CI usage (would need headless browser setup)
-npx playwright test --reporter=tap
+# Get test results as JSON
+curl http://localhost:3333/html-test/results.json
 ```
+
+Response:
+```json
+{
+  "timestamp": "2025-01-15T10:30:00.000Z",
+  "status": "completed",
+  "total": 8,
+  "passed": 8,
+  "failed": 0,
+  "success": true,
+  "files": [
+    {
+      "url": "/html-test/file/example.test.html",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0
+    }
+  ]
+}
+```
+
+### TAP Results Endpoint
+
+```bash
+# Get test results as TAP
+curl http://localhost:3333/html-test/results.tap
+```
+
+Response:
+```
+TAP version 13
+1..8
+ok 1 - should have main heading
+ok 2 - should have clickable button  
+ok 3 - async test example
+# PASS 8/8
+```
+
+### GitHub Actions Integration
+
+```yaml
+# .github/workflows/test.yml
+name: HTML Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Start test server
+        run: |
+          npm start &
+          sleep 10
+          
+      - name: Run HTML tests
+        run: |
+          # Wait for server to be ready
+          curl --retry 10 --retry-delay 1 http://localhost:3333/html-test
+          
+          # Run tests and get results
+          TEST_RESULTS=$(curl -s http://localhost:3333/html-test/results.json)
+          echo "Test Results: $TEST_RESULTS"
+          
+          # Check if tests passed
+          SUCCESS=$(echo $TEST_RESULTS | jq -r '.success')
+          if [ "$SUCCESS" != "true" ]; then
+            echo "Tests failed!"
+            curl -s http://localhost:3333/html-test/results.tap
+            exit 1
+          fi
+          
+          echo "All tests passed!"
+```
+
+## Development
+
+The plugin follows strict web standards with no build tools:
+
+- **ES Modules**: Native browser module loading
+- **Declarative Shadow DOM**: Modern component architecture  
+- **Web Components**: Custom elements with proper lifecycle
+- **No Frameworks**: Pure vanilla JavaScript
+- **Progressive Enhancement**: Works without JavaScript for basic HTML
 
 ## Architecture
 
-Built following strict web standards:
+```
+arc-plugin-html-test/
+├── index.js                 # Main plugin file (set/sandbox hooks)
+├── handler/                 # HTTP route handlers
+│   └── index.js            # /html-test route logic
+├── lib/                    # Shared libraries
+│   ├── browser-assertions.js
+│   ├── test-config.js
+│   └── test-runner.js
+├── static/                 # Client-side assets
+│   ├── components/         # Web Components
+│   ├── js/                # JavaScript modules
+│   ├── lib/               # Browser libraries
+│   └── styles/            # CSS styling
+└── README.md              # This file
+```
 
-- **No Build Tools**: Direct ES module loading in browsers
-- **No Frameworks**: Vanilla JavaScript with Web Components
-- **Serverless**: Architect framework for AWS Lambda deployment
-- **Progressive Enhancement**: Works without JavaScript for basic HTML
-- **Standards Compliant**: HTML5, CSS3, ES2020+ only
+## Requirements
 
-## Development Philosophy
-
-**ALWAYS DO THE LEAST AMOUNT OF CHANGES TO FULFILL THE REQUIREMENTS**
-
-- Make minimal, targeted changes
-- Avoid over-engineering
-- Choose the simplest solution that works
-- Focus on exact requirements
+- **Node.js**: 18+
+- **Architect**: 11.0.0+
+- **Modern Browser**: ES Module support required
 
 ## License
 
-MIT
+Apache-2.0
+
+## Contributing
+
+This plugin prioritizes web standards, native browser capabilities, and zero build dependencies. All contributions must align with these principles.

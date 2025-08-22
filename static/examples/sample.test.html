@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Test File</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
+    <style>
+        .hidden { display: none; }
+        .test-container {
+            padding: 20px;
+            font-family: system-ui, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 id="page-title">Sample Application</h1>
+        <p id="description">This is a sample page for testing.</p>
+        
+        <form id="contact-form">
+            <input type="text" id="name-input" placeholder="Your name" required>
+            <input type="email" id="email-input" placeholder="Your email" required>
+            <button type="submit" id="submit-btn">Submit</button>
+        </form>
+        
+        <div id="message" class="hidden">Thank you for your submission!</div>
+        
+        <ul id="feature-list">
+            <li>Feature 1</li>
+            <li>Feature 2</li>
+            <li class="premium">Premium Feature</li>
+        </ul>
+    </div>
+
+    <!-- Test Script -->
+    <script type="module">
+        // These tests will be automatically discovered by the test runner
+        
+        test('should have correct page title', () => {
+            assert.exists('#page-title');
+            assert.text('#page-title', 'Sample Application');
+        });
+
+        test('should have description text', () => {
+            assert.textContains('#description', 'sample page');
+        });
+
+        test('should have form elements', () => {
+            assert.exists('#contact-form');
+            assert.exists('#name-input');
+            assert.exists('#email-input');
+            assert.exists('#submit-btn');
+        });
+
+        test('should have required attributes on inputs', () => {
+            assert.hasAttribute('#name-input', 'required');
+            assert.hasAttribute('#email-input', 'required');
+        });
+
+        test('should have hidden message initially', () => {
+            assert.exists('#message');
+            assert.hidden('#message');
+        });
+
+        test('should count feature list items', () => {
+            assert.count('#feature-list li', 3);
+        });
+
+        test('should identify premium feature', () => {
+            assert.hasClass('#feature-list .premium', 'premium');
+        });
+
+        test('form submission simulation', async () => {
+            const nameInput = document.querySelector('#name-input');
+            const emailInput = document.querySelector('#email-input');
+            const message = document.querySelector('#message');
+            
+            // Simulate user input
+            nameInput.value = 'John Doe';
+            emailInput.value = 'john@example.com';
+            
+            assert.value('#name-input', 'John Doe');
+            assert.value('#email-input', 'john@example.com');
+            
+            // Simulate form submission (without actually submitting)
+            message.classList.remove('hidden');
+            
+            assert.visible('#message');
+        });
+    </script>
+</body>
+</html>
