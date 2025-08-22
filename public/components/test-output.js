@@ -1,7 +1,7 @@
 class TestOutput extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    // Shadow root is created by Declarative Shadow DOM - no need to attach manually
     this.lines = [];
     this.testResults = {
       total: 0,
@@ -12,7 +12,7 @@ class TestOutput extends HTMLElement {
   }
 
   connectedCallback() {
-    this.render();
+    // Shadow root already exists from Declarative Shadow DOM
     this.setupEventListeners();
   }
 
@@ -77,6 +77,8 @@ class TestOutput extends HTMLElement {
   }
 
   updateStatus() {
+    if (!this.shadowRoot) return;
+    
     const statusElement = this.shadowRoot.querySelector('.status');
     const progressElement = this.shadowRoot.querySelector('.progress-bar');
 
@@ -130,6 +132,8 @@ class TestOutput extends HTMLElement {
   }
 
   updateOutput() {
+    if (!this.shadowRoot) return;
+    
     const outputElement = this.shadowRoot.querySelector('.output');
     outputElement.innerHTML = this.lines
       .map(line => this.formatLine(line))
@@ -174,120 +178,6 @@ class TestOutput extends HTMLElement {
     this.updateOutput();
   }
 
-  render() {
-    this.shadowRoot.innerHTML = `
-      <style>
-        :host {
-          display: block;
-          border: 1px solid #e5e5e5;
-          border-radius: 2px;
-          font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-          font-size: 13px;
-          line-height: 1.4;
-        }
-
-        .header {
-          background: #f8f9fa;
-          border-bottom: 1px solid #e5e5e5;
-          padding: 12px 16px;
-        }
-
-        .status {
-          font-weight: 500;
-          margin: 0;
-        }
-
-        .status.running {
-          color: #495057;
-        }
-
-        .status.success {
-          color: #28a745;
-        }
-
-        .status.failure {
-          color: #dc3545;
-        }
-
-        .progress {
-          margin-top: 8px;
-          height: 2px;
-          background: #e9ecef;
-          border-radius: 1px;
-          overflow: hidden;
-        }
-
-        .progress-bar {
-          height: 100%;
-          background: #007bff;
-          transition: width 0.3s ease;
-          width: 0%;
-        }
-
-        .output {
-          max-height: 400px;
-          overflow-y: auto;
-          padding: 0;
-          margin: 0;
-          background: #ffffff;
-        }
-
-        .line {
-          padding: 2px 16px;
-          border-left: 3px solid transparent;
-          white-space: pre-wrap;
-          word-break: break-word;
-        }
-
-        .line.pass {
-          color: #28a745;
-          border-left-color: #28a745;
-          background: #f8fff9;
-        }
-
-        .line.fail {
-          color: #dc3545;
-          border-left-color: #dc3545;
-          background: #fff8f8;
-        }
-
-        .line.summary {
-          font-weight: 600;
-          color: #343a40;
-          background: #f8f9fa;
-          border-left-color: #495057;
-        }
-
-        .line.meta {
-          color: #495057;
-          font-style: italic;
-        }
-
-        .line.detail {
-          color: #495057;
-          background: #f8f9fa;
-          font-size: 12px;
-        }
-
-        .empty-state {
-          padding: 32px 16px;
-          text-align: center;
-          color: #495057;
-        }
-      </style>
-      
-      <div class="header">
-        <div class="status" role="status" aria-live="polite" aria-atomic="true">Ready</div>
-        <div class="progress">
-          <div class="progress-bar"></div>
-        </div>
-      </div>
-      
-      <div class="output" role="log" aria-label="Test execution output" aria-live="polite">
-        <div class="empty-state">No test output yet. Click "Run Tests" to begin.</div>
-      </div>
-    `;
-  }
 }
 
 customElements.define('test-output', TestOutput);
