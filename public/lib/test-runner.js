@@ -107,17 +107,35 @@ export class TestRunner {
   }
 
   sanitizeHTML(html) {
-    // Basic HTML sanitization to prevent common XSS vectors
-    // Remove dangerous script tags and event handlers
-    let sanitized = html
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
-      .replace(/javascript:/gi, '')
-      .replace(/<iframe\b[^>]*>/gi, '')
-      .replace(/<object\b[^>]*>/gi, '')
-      .replace(/<embed\b[^>]*>/gi, '');
+    // Use DOMParser for proper HTML parsing and sanitization
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
     
-    return sanitized;
+    // Remove all potentially dangerous elements
+    doc.querySelectorAll('script, iframe, object, embed, applet, form').forEach(el => el.remove());
+    
+    // Remove all event handler attributes and javascript: URLs
+    doc.querySelectorAll('*').forEach(el => {
+      Array.from(el.attributes).forEach(attr => {
+        if (attr.name.startsWith('on') || 
+            attr.value.includes('javascript:') || 
+            attr.value.includes('data:') ||
+            attr.value.includes('vbscript:')) {
+          el.removeAttribute(attr.name);
+        }
+      });
+      
+      // Remove dangerous style attributes that could contain expressions
+      if (el.hasAttribute('style')) {
+        const style = el.getAttribute('style');
+        if (style.includes('expression') || style.includes('javascript:') || style.includes('vbscript:')) {
+          el.removeAttribute('style');
+        }
+      }
+    });
+    
+    // Return only the body content to avoid full document structure
+    return doc.body ? doc.body.innerHTML : '';
   }
 
   extractTestsFromIframe(iframe, url) {
@@ -140,19 +158,19 @@ export class TestRunner {
     const startTime = performance.now();
 
     try {
-      // Set the iframe document as the test context
-      const originalDocument = window.document;
-      window.document = test.iframe;
+      // Create a test context with iframe document without global manipulation
+      const testContext = {
+        document: test.iframe,
+        window: test.iframe.defaultView || window,
+        assert: this.assertions
+      };
 
-      // Run the test function
+      // Run the test function with proper context binding
       if (test.fn.constructor.name === 'AsyncFunction') {
-        await test.fn();
+        await test.fn.call(testContext);
       } else {
-        test.fn();
+        test.fn.call(testContext);
       }
-
-      // Restore original document
-      window.document = originalDocument;
 
       const endTime = performance.now();
       const duration = endTime - startTime;
