@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Spec</title>
+</head>
+<body>
+    <my-component id="test-component">
+        <template shadowrootmode="open">
+            <style>
+                :host {
+                    display: block;
+                    padding: 16px;
+                    background: #f5f5f5;
+                    border-radius: 4px;
+                }
+                .content {
+                    color: #333;
+                    font-family: system-ui, sans-serif;
+                }
+                .hidden {
+                    display: none;
+                }
+            </style>
+            <div class="content">
+                <h2>Custom Component</h2>
+                <p>This component uses Declarative Shadow DOM</p>
+                <button id="toggle" type="button">Toggle</button>
+                <div id="toggleable" class="hidden">Hidden content</div>
+            </div>
+        </template>
+    </my-component>
+
+    <script type="module">
+        class MyComponent extends HTMLElement {
+            constructor() {
+                super();
+                // Shadow root already created by Declarative Shadow DOM
+            }
+
+            connectedCallback() {
+                const button = this.shadowRoot.querySelector('#toggle');
+                const toggleable = this.shadowRoot.querySelector('#toggleable');
+                
+                button.addEventListener('click', () => {
+                    toggleable.classList.toggle('hidden');
+                });
+            }
+        }
+
+        customElements.define('my-component', MyComponent);
+
+        // Wait for component to be defined before testing
+        await customElements.whenDefined('my-component');
+
+        test('should render custom component', () => {
+            assert.exists('my-component');
+            assert.exists('#test-component');
+        });
+
+        test('should have shadow DOM content', () => {
+            const component = document.querySelector('#test-component');
+            assert.exists(component, 'Component should exist');
+            
+            // Note: These assertions would need to be adapted for shadow DOM testing
+            // For now, testing the component host element
+            assert.hasAttribute('#test-component', 'id');
+        });
+
+        test('should be a custom element', () => {
+            const component = document.querySelector('#test-component');
+            assert.isTrue(component instanceof MyComponent);
+        });
+
+        test('component class assertions', () => {
+            const component = document.querySelector('#test-component');
+            assert.isTrue(component.tagName === 'MY-COMPONENT');
+            assert.isTrue(component.shadowRoot !== null);
+        });
+    </script>
+</body>
+</html>

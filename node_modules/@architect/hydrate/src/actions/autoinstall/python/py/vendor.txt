@@ -1,0 +1,2 @@
+importlib_metadata==8.2.0
+zipp

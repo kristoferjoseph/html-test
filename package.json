@@ -1,0 +1,38 @@
+{
+  "name": "arc-plugin-html-test",
+  "version": "1.0.0",
+  "description": "Architect plugin for vanilla JavaScript HTML testing with TAP output and CI/CD integration",
+  "license": "Apache-2.0",
+  "author": "@dam",
+  "type": "module",
+  "main": "index.js",
+  "keywords": [
+    "architect",
+    "plugin",
+    "testing",
+    "html",
+    "tap",
+    "ci-cd",
+    "web-components",
+    "vanilla-js"
+  ],
+  "files": [
+    "index.js",
+    "handler/",
+    "lib/",
+    "static/"
+  ],
+  "scripts": {
+    "start": "arc sandbox",
+    "test": "node --test test/**/*.test.js"
+  },
+  "peerDependencies": {
+    "@architect/architect": ">=11.0.0"
+  },
+  "devDependencies": {
+    "@architect/architect": "^11.3.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

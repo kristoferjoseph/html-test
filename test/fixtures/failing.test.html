@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Failing Test Example</title>
+</head>
+<body>
+    <div id="container">
+        <p>Test content</p>
+        <button id="disabled-btn" disabled>Disabled Button</button>
+    </div>
+
+    <script type="module">
+        test('should pass - element exists', () => {
+            assert.exists('#container');
+        });
+
+        test('should fail - element does not exist', () => {
+            assert.exists('#non-existent-element');
+        });
+
+        test('should fail - incorrect text content', () => {
+            assert.text('p', 'Wrong text content');
+        });
+
+        test('should fail - button should be enabled', () => {
+            assert.enabled('#disabled-btn');
+        });
+
+        test('should pass - button is disabled', () => {
+            assert.disabled('#disabled-btn');
+        });
+    </script>
+</body>
+</html>

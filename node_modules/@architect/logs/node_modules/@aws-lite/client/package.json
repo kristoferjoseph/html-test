@@ -1,0 +1,102 @@
+{
+  "name": "@aws-lite/client",
+  "version": "0.21.10",
+  "description": "A simple, fast, extensible AWS client",
+  "homepage": "https://github.com/architect/aws-lite",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/architect/aws-lite.git"
+  },
+  "bugs": "https://github.com/architect/aws-lite/issues",
+  "scripts": {
+    "-----plugins----": "",
+    "gen": "npm run generate-plugins",
+    "generate-plugins": "node scripts/generate-plugins/index.mjs",
+    "plugin": "node scripts/version-plugins.mjs",
+    "publish-plugins": "node scripts/publish-plugins.mjs",
+    "------other-----": "",
+    "vendor": "scripts/vendor/vendor.sh",
+    "-----testing----": "",
+    "coverage": "nyc --reporter=lcov --reporter=text npm run test:unit",
+    "lint": "eslint --fix .",
+    "test:16.x": "npm run gen && npm run test:plugins && npm run test:unit",
+    "test:live": "cross-env tape 'test/live/**/*-test.js' | tap-arc",
+    "test:plugins": "cross-env tape 'plugins/**/test/**/*-test.mjs' | tap-arc",
+    "test:precommit": "cross-env PRECOMMIT=true npm run gen && npm run lint",
+    "test:unit": "cross-env tape 'test/unit/**/*-test.mjs' | tap-arc",
+    "test": "npm run lint && npm run gen && npm run test:plugins && npm run coverage"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run test:precommit",
+    "pre-push": "npm run test"
+  },
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws4": "^1.13.0"
+  },
+  "devDependencies": {
+    "@actions/core": "^1.10.1",
+    "@architect/eslint-config": "^3.0.0",
+    "@aws-sdk/util-dynamodb": "^3.596.0",
+    "@smithy/smithy-client": "^3.1.2",
+    "adm-zip": "^0.5.14",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.4.0",
+    "fast-xml-parser": "^4.4.0",
+    "mock-tmp": "^0.0.4",
+    "nyc": "^17.0.0",
+    "semver": "^7.6.2",
+    "simple-git-hooks": "^2.11.1",
+    "tap-arc": "^1.2.2",
+    "tape": "^5.7.5"
+  },
+  "files": [
+    "src"
+  ],
+  "workspaces": [
+    "plugins/acm",
+    "plugins/apigateway",
+    "plugins/apigatewaymanagementapi",
+    "plugins/apigatewayv2",
+    "plugins/cloudformation",
+    "plugins/cloudfront",
+    "plugins/cloudwatch-logs",
+    "plugins/dynamodb",
+    "plugins/iam",
+    "plugins/lambda",
+    "plugins/organizations",
+    "plugins/rds-data",
+    "plugins/route53",
+    "plugins/s3",
+    "plugins/sns",
+    "plugins/sqs",
+    "plugins/ssm",
+    "plugins/sts"
+  ],
+  "eslintConfig": {
+    "extends": "@architect/eslint-config",
+    "rules": {
+      "global-require": "off"
+    },
+    "parserOptions": {
+      "ecmaVersion": 13
+    }
+  },
+  "nyc": {
+    "check-coverage": true,
+    "branches": 100,
+    "lines": 100,
+    "functions": 100,
+    "statements": 100,
+    "exclude": [
+      "plugins/",
+      "test/",
+      "src/_vendor/"
+    ]
+  }
+}

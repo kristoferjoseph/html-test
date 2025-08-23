@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Async Test Spec</title>
+</head>
+<body>
+    <div id="loading" style="display: block;">Loading...</div>
+    <div id="content" style="display: none;">Content loaded</div>
+    <div id="error" style="display: none;">Error occurred</div>
+
+    <script type="module">
+        // Simulate async data loading
+        function loadData() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+                    resolve('Data loaded');
+                }, 50);
+            });
+        }
+
+        // Simulate async error
+        function loadWithError() {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    reject(new Error('Network error'));
+                }, 30);
+            });
+        }
+
+        test('should show loading state initially', () => {
+            assert.visible('#loading');
+            assert.hidden('#content');
+            assert.hidden('#error');
+        });
+
+        test('should load data asynchronously', async () => {
+            const result = await loadData();
+            
+            assert.isEqual(result, 'Data loaded');
+            assert.hidden('#loading');
+            assert.visible('#content');
+            assert.text('#content', 'Content loaded');
+        });
+
+        test('should handle async errors', async () => {
+            try {
+                await loadWithError();
+                // If we reach here, the test should fail
+                assert.isTrue(false, 'Expected an error to be thrown');
+            } catch (error) {
+                assert.isEqual(error.message, 'Network error');
+            }
+        });
+
+        test('should work with promises and timeouts', async () => {
+            const start = Date.now();
+            
+            await new Promise(resolve => setTimeout(resolve, 20));
+            
+            const elapsed = Date.now() - start;
+            assert.isTrue(elapsed >= 20, `Expected at least 20ms, got ${elapsed}ms`);
+        });
+
+        test('multiple async operations', async () => {
+            const promises = [
+                Promise.resolve('first'),
+                Promise.resolve('second'),
+                Promise.resolve('third')
+            ];
+
+            const results = await Promise.all(promises);
+            
+            assert.isEqual(results.length, 3);
+            assert.isEqual(results[0], 'first');
+            assert.isEqual(results[2], 'third');
+        });
+    </script>
+</body>
+</html>

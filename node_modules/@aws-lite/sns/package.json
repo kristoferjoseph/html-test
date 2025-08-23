@@ -1,0 +1,22 @@
+{
+  "name": "@aws-lite/sns",
+  "version": "0.0.8",
+  "description": "Official `aws-lite` plugin for SNS",
+  "homepage": "https://aws-lite.org/services/sns",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aws-lite/aws-lite.git",
+    "directory": "plugins/sns"
+  },
+  "bugs": "https://github.com/aws-lite/aws-lite/issues",
+  "main": "src/index.mjs",
+  "engines": {
+    "node": ">=16"
+  },
+  "author": "@architect",
+  "license": "Apache-2.0",
+  "files": [
+    "src"
+  ],
+  "scripts": {}
+}
