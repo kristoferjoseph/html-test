@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Test</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Hello World</h1>
+        <p class="description">This is a test application</p>
+        <button id="click-me" type="button">Click Me</button>
+        <input id="text-input" type="text" placeholder="Enter text">
+        <form id="test-form">
+            <input id="required-field" type="text" required>
+            <input id="checkbox" type="checkbox">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script type="module">
+        // Basic DOM assertions test
+        test('should have main elements', () => {
+            assert.exists('#app');
+            assert.exists('h1');
+            assert.text('h1', 'Hello World');
+        });
+
+        test('should have description with correct text', () => {
+            assert.exists('.description');
+            assert.textContains('.description', 'test application');
+        });
+
+        test('should have interactive button', () => {
+            assert.exists('#click-me');
+            assert.enabled('#click-me');
+            assert.attribute('#click-me', 'type', 'button');
+        });
+
+        test('should have form elements', () => {
+            assert.exists('#test-form');
+            assert.exists('#required-field');
+            assert.hasAttribute('#required-field', 'required');
+            assert.exists('#checkbox');
+            assert.notChecked('#checkbox');
+        });
+
+        test('async test example', async () => {
+            await new Promise(resolve => setTimeout(resolve, 10));
+            assert.exists('#text-input');
+            assert.attribute('#text-input', 'placeholder', 'Enter text');
+        });
+    </script>
+</body>
+</html>

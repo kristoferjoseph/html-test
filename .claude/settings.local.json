@@ -24,7 +24,8 @@
       "Bash(pkill:*)",
       "Bash(true)",
       "Bash(npx arc sandbox:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(npm test)"
     ],
     "deny": [],
     "ask": []
