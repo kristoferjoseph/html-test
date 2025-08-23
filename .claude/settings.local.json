@@ -25,7 +25,10 @@
       "Bash(true)",
       "Bash(npx arc sandbox:*)",
       "Bash(cp:*)",
-      "Bash(npm test)"
+      "Bash(npm test)",
+      "Bash(node:*)",
+      "Bash(npm test:*)",
+      "Bash(NODE_ENV=development node -e \"\nimport { loadTemplate } from ''./lib/template-engine.js'';\n\nconsole.log(''🚀 Testing Revolutionary HTML Template System!'');\n\n// Test the main template with all features\nconst result = await loadTemplate(''main-test-runner.html'', {\n  testFiles: [\n    { \n      name: ''component.test.html'',\n      url: ''/html-test/file/component.test.html'', \n      path: ''tests/component.test.html'' \n    },\n    { \n      name: ''integration.spec.html'',\n      url: ''/html-test/file/integration.spec.html'', \n      path: ''tests/integration.spec.html'' \n    }\n  ],\n  config: { directory: ''tests/html'' },\n  env: process.env\n});\n\nconsole.log(''✅ Template loaded successfully!'');\nconsole.log(''📏 Length:'', result.length, ''characters'');\nconsole.log(''🔍 Features detected:'');\nconsole.log(''  • Template literals evaluated:'', result.includes(''component.test.html''));\nconsole.log(''  • Environment variables:'', result.includes(''development''));\nconsole.log(''  • Conditional rendering:'', result.includes(''Debug Info''));\nconsole.log(''  • Custom elements resolved:'', result.includes(''shadowrootmode=\"\"open\"\"''));\nconsole.log(''  • Array mapping:'', result.includes(''test-file-item''));\nconsole.log(''  • HTML structure valid:'', result.includes(''<!DOCTYPE html>''));\n\nconsole.log(''\\n🎉 REVOLUTIONARY HTML TEMPLATE SYSTEM IS WORKING!'');\nconsole.log(''\\n📈 This enables:'');\nconsole.log(''  • Separation of logic and presentation'');  \nconsole.log(''  • Environment-aware templates'');\nconsole.log(''  • Custom Element resolution'');\nconsole.log(''  • Hot reloading in development'');\nconsole.log(''  • Zero build tools'');\nconsole.log(''  • Full JavaScript template literal power'');\nconsole.log(''  • Web standards compliance'');\n\")"
     ],
     "deny": [],
     "ask": []
