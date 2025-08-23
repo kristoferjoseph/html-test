@@ -130,8 +130,8 @@ describe('HTTP Route Handler', () => {
     const response = await handler(mockRequest);
     
     assert.equal(response.statusCode, 404, 'Should return 404 for unknown routes');
-    assert.equal(response.headers['Content-Type'], 'text/plain', 'Should return plain text for 404');
-    assert.ok(response.body.includes('Not found'), 'Should include not found message');
+    assert.equal(response.headers['Content-Type'], 'text/html', 'Should return HTML for 404');
+    assert.ok(response.body.includes('404'), 'Should include 404 status code');
   });
 
   test('should handle errors gracefully', async () => {
@@ -181,11 +181,13 @@ describe('HTTP Route Handler', () => {
     // Check for test runner UI elements
     assert.ok(response.body.includes('id="run-all-tests"'), 'Should have run button');
     assert.ok(response.body.includes('id="clear-output"'), 'Should have clear button');
-    assert.ok(response.body.includes('<test-output'), 'Should include test output component');
     
-    // Check for Declarative Shadow DOM
+    // Check for Declarative Shadow DOM (test-output component gets resolved to this)
     assert.ok(response.body.includes('shadowrootmode="open"'), 'Should use Declarative Shadow DOM');
     assert.ok(response.body.includes('<template shadowrootmode="open">'), 'Should have shadow DOM template');
+    
+    // Check that test-output component was resolved (should contain the shadow DOM styles)
+    assert.ok(response.body.includes(':host {'), 'Should include resolved test-output component styles');
   });
 
   test('should include discovered test files in HTML output', async () => {

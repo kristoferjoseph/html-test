@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Test Runner - Plugin</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+    <link rel="stylesheet" href="/html-test/static/styles/test.css">
+</head>
+<body>
+    <header class="header">
+        <h1>🧪 HTML Test Runner</h1>
+        <div class="test-controls">
+            <button id="run-all-tests" class="run-button" aria-label="Run all discovered tests">Run All Tests</button>
+            <button id="clear-output" class="clear-button" aria-label="Clear test output">Clear</button>
+        </div>
+    </header>
+
+    <main class="main">
+        <section class="test-area" aria-labelledby="test-files-heading">
+            <h2 id="test-files-heading">Discovered Test Files</h2>
+            <div id="test-files">
+                ${testFiles.length > 0 ? `
+                    <ul class="test-file-list">
+                        ${testFiles.map(file => `
+                            <li class="test-file-item">
+                                <a href="${file.url}" class="test-file-link">${file.name}</a>
+                                <span class="test-file-path">${file.path}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                ` : `
+                    <div class="empty-state">
+                        <p>No test files found in the configured directory.</p>
+                        <p>Add <code>*.test.html</code> or <code>*.spec.html</code> files to get started.</p>
+                        ${env.NODE_ENV === 'development' ? `
+                            <details style="margin-top: 16px; text-align: left;">
+                                <summary>Debug Info</summary>
+                                <pre style="font-size: 12px; background: #f5f5f5; padding: 8px; border-radius: 2px;">
+Directory: ${env.HTML_TEST_DIRECTORY || 'tests/html'}
+Patterns: ${env.HTML_TEST_PATTERNS || '*.test.html,*.spec.html'}
+Working Directory: ${env.PWD || 'unknown'}
+                                </pre>
+                            </details>
+                        ` : ''}
+                    </div>
+                `}
+            </div>
+        </section>
+
+        <section class="output-area" aria-labelledby="test-output-heading">
+            <h2 id="test-output-heading">Test Results</h2>
+            <test-output id="test-output" role="log" aria-live="polite" aria-label="Test results output"></test-output>
+        </section>
+    </main>
+
+    <script type="module" src="/html-test/static/js/plugin-main.js"></script>
+</body>
+</html>

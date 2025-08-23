@@ -18,6 +18,36 @@ This project adheres to **strict standards-based web development** with zero fra
 - Resist the urge to add "improvements" that weren't asked for
 - Focus on the exact requirement, nothing more
 
+**MANDATORY TEST-DRIVEN DEVELOPMENT WORKFLOW**
+
+**CRITICAL**: ALWAYS RUN THE TESTS AND CHECK THE OUTPUT BEFORE declaring any task complete.
+
+### Required Development Flow:
+1. **Plan**: Add a step to the plan/todo list for the specific task
+2. **Implement**: Make the minimal code changes to fulfill the requirement
+3. **Test**: ALWAYS run `npm test` and verify all tests pass
+4. **Verify**: Check the test output carefully - ensure no failing tests
+5. **Fix**: If tests fail, fix the issues before moving to the next task
+6. **Complete**: Only mark the task as completed after tests pass
+7. **Next**: Move to the next planned task and repeat the cycle
+
+### Test Execution Requirements:
+- **Run `npm test` after every code change**
+- **Read the entire test output** - don't skip to the summary
+- **Investigate any failing tests immediately**
+- **Fix failing tests before proceeding**
+- **Verify test count** - ensure no tests were accidentally broken
+- **Check for new warnings or errors** in the output
+
+### Never Skip Testing:
+- ❌ **Never** declare a task complete without running tests
+- ❌ **Never** assume tests will pass without checking
+- ❌ **Never** move to the next task with failing tests
+- ❌ **Never** ignore test warnings or errors
+- ✅ **Always** run tests after implementation
+- ✅ **Always** fix failing tests immediately
+- ✅ **Always** verify the complete test suite passes
+
 ## Frontend Architecture
 
 ### HTML/CSS/JavaScript Standards
@@ -40,6 +70,24 @@ This project adheres to **strict standards-based web development** with zero fra
 - **No String Templates**: Never use `shadowRoot.innerHTML = "template string"` - always use declarative templates
 - **Lifecycle Callbacks**: Implement standard Custom Element lifecycle methods
 - **Component Readiness**: Use `customElements.whenDefined()` for proper timing
+
+### HTML Template Engine (Revolutionary Feature)
+- **Template Literal HTML Files**: Use JavaScript template literal syntax (`${variable}`) directly in `.html` files
+- **Automatic Custom Element Resolution**: `<test-output>` automatically resolves to `templates/components/test-output.html`
+- **Context Evaluation**: Templates have access to `process.env`, function parameters, and safe utilities
+- **Environment-Aware Rendering**: Templates can conditionally render based on `env.NODE_ENV`
+- **Zero Escaping Required**: Write template literals naturally without backtick escaping
+- **Safe Evaluation**: Built-in security boundaries prevent code injection
+- **Development Features**: Hot reloading via `/html-test/dev/clear-cache` endpoint
+- **Template Structure**:
+  ```
+  templates/
+  ├── main-test-runner.html        # Main interface templates
+  ├── components/                  # Custom element templates
+  │   └── test-output.html         # Resolved from <test-output> tags
+  ├── pages/                       # Page-specific templates
+  └── errors/                      # Error page templates
+  ```
 
 ## Backend Architecture
 

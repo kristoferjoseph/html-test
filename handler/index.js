@@ -5,11 +5,14 @@
  * - Main test runner interface
  * - Individual test file execution  
  * - CI/CD results endpoints
+ * 
+ * Now powered by the revolutionary HTML Template Engine!
  */
 
 import { readFile, readdir, stat } from 'fs/promises'
 import { join, dirname, relative } from 'path'
 import { fileURLToPath } from 'url'
+import { loadTemplate, clearTemplateCache } from '../lib/template-engine.js'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const pluginRoot = dirname(__dirname)
@@ -79,150 +82,14 @@ async function discoverTestFiles(testDir, patterns = ['*.test.html', '*.spec.htm
 }
 
 /**
- * Generate main test runner HTML page
+ * Generate main test runner HTML page using template engine
  */
-function generateTestRunnerHTML(testFiles = []) {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML Test Runner - Plugin</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
-    <link rel="stylesheet" href="/html-test/static/styles/test.css">
-</head>
-<body>
-    <header class="header">
-        <h1>🧪 HTML Test Runner</h1>
-        <div class="test-controls">
-            <button id="run-all-tests" class="run-button" aria-label="Run all discovered tests">Run All Tests</button>
-            <button id="clear-output" class="clear-button" aria-label="Clear test output">Clear</button>
-        </div>
-    </header>
-
-    <main class="main">
-        <section class="test-area" aria-labelledby="test-files-heading">
-            <h2 id="test-files-heading">Discovered Test Files</h2>
-            <div id="test-files">
-                ${testFiles.length > 0 ? `
-                    <ul class="test-file-list">
-                        ${testFiles.map(file => `
-                            <li class="test-file-item">
-                                <a href="${file.url}" class="test-file-link">${file.name}</a>
-                                <span class="test-file-path">${file.path}</span>
-                            </li>
-                        `).join('')}
-                    </ul>
-                ` : `
-                    <div class="empty-state">
-                        <p>No test files found in the configured directory.</p>
-                        <p>Add <code>*.test.html</code> or <code>*.spec.html</code> files to get started.</p>
-                    </div>
-                `}
-            </div>
-        </section>
-
-        <section class="output-area" aria-labelledby="test-output-heading">
-            <h2 id="test-output-heading">Test Results</h2>
-            <test-output id="test-output" role="log" aria-live="polite" aria-label="Test results output">
-                <template shadowrootmode="open">
-                    <style>
-                        :host {
-                            display: block;
-                            border: 1px solid #e5e5e5;
-                            border-radius: 2px;
-                            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-                            font-size: 13px;
-                            line-height: 1.4;
-                        }
-                        .header {
-                            background: #f8f9fa;
-                            border-bottom: 1px solid #e5e5e5;
-                            padding: 12px 16px;
-                        }
-                        .status {
-                            font-weight: 500;
-                            margin: 0;
-                        }
-                        .status.running { color: #495057; }
-                        .status.success { color: #28a745; }
-                        .status.failure { color: #dc3545; }
-                        .progress {
-                            margin-top: 8px;
-                            height: 2px;
-                            background: #e9ecef;
-                            border-radius: 1px;
-                            overflow: hidden;
-                        }
-                        .progress-bar {
-                            height: 100%;
-                            background: #007bff;
-                            transition: width 0.3s ease;
-                            width: 0%;
-                        }
-                        .output {
-                            max-height: 400px;
-                            overflow-y: auto;
-                            padding: 0;
-                            margin: 0;
-                            background: #ffffff;
-                        }
-                        .line {
-                            padding: 2px 16px;
-                            border-left: 3px solid transparent;
-                            white-space: pre-wrap;
-                            word-break: break-word;
-                        }
-                        .line.pass {
-                            color: #28a745;
-                            border-left-color: #28a745;
-                            background: #f8fff9;
-                        }
-                        .line.fail {
-                            color: #dc3545;
-                            border-left-color: #dc3545;
-                            background: #fff8f8;
-                        }
-                        .line.summary {
-                            font-weight: 600;
-                            color: #343a40;
-                            background: #f8f9fa;
-                            border-left-color: #495057;
-                        }
-                        .line.meta {
-                            color: #495057;
-                            font-style: italic;
-                        }
-                        .line.detail {
-                            color: #495057;
-                            background: #f8f9fa;
-                            font-size: 12px;
-                        }
-                        .empty-state {
-                            padding: 32px 16px;
-                            text-align: center;
-                            color: #495057;
-                        }
-                    </style>
-                    
-                    <div class="header">
-                        <div class="status" role="status" aria-live="polite" aria-atomic="true">Ready</div>
-                        <div class="progress">
-                            <div class="progress-bar"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="output" role="log" aria-label="Test execution output" aria-live="polite">
-                        <div class="empty-state">Click "Run All Tests" to execute discovered test files.</div>
-                    </div>
-                </template>
-            </test-output>
-        </section>
-    </main>
-
-    <script type="module" src="/html-test/static/js/plugin-main.js"></script>
-</body>
-</html>`
+async function generateTestRunnerHTML(testFiles = [], config = {}) {
+  return await loadTemplate('main-test-runner.html', {
+    testFiles,
+    config,
+    env: process.env
+  })
 }
 
 export async function handler(req) {
@@ -242,14 +109,13 @@ export async function handler(req) {
           'Cache-Control': 'no-cache',
           'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src 'self'; connect-src 'self' ws://localhost:2222;"
         },
-        body: generateTestRunnerHTML(testFiles)
+        body: await generateTestRunnerHTML(testFiles, config)
       }
     }
     
     if (path.startsWith('/html-test/file/')) {
       // Individual test file execution
       const testFile = decodeURIComponent(path.replace('/html-test/file/', ''))
-      // TODO: Load and serve specific test file
       
       return {
         statusCode: 200,
@@ -257,7 +123,11 @@ export async function handler(req) {
           'Content-Type': 'text/html',
           'Cache-Control': 'no-cache'
         },
-        body: `<h1>Test File: ${testFile}</h1><p>TODO: Implement test file loading</p>`
+        body: await loadTemplate('pages/individual-test.html', {
+          testFile,
+          config,
+          env: process.env
+        })
       }
     }
     
@@ -327,6 +197,20 @@ export async function handler(req) {
       }
     }
     
+    if (path === '/html-test/dev/clear-cache' && process.env.NODE_ENV === 'development') {
+      // Development endpoint to clear template cache for hot reloading
+      clearTemplateCache()
+      
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: 'Template cache cleared', 
+          timestamp: new Date().toISOString() 
+        })
+      }
+    }
+    
     if (path.startsWith('/html-test/static/')) {
       // Static asset serving
       const assetPath = path.replace('/html-test/static/', '')
@@ -342,8 +226,12 @@ export async function handler(req) {
     // 404 for unknown paths
     return {
       statusCode: 404,
-      headers: { 'Content-Type': 'text/plain' },
-      body: 'Not found'
+      headers: { 'Content-Type': 'text/html' },
+      body: await loadTemplate('errors/404.html', {
+        requestPath: path,
+        requestMethod: method,
+        env: process.env
+      })
     }
     
   } catch (error) {
