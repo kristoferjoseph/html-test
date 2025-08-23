@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test File: ${testFile} - HTML Test Runner</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .file-info {
+            color: #666;
+            font-size: 14px;
+        }
+        .nav-link {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .nav-link:hover {
+            background: #0056b3;
+        }
+        .content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .todo {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 16px;
+            border-radius: 4px;
+            color: #856404;
+        }
+        ${env.NODE_ENV === 'development' ? `
+        .debug-info {
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 16px;
+        }
+        ` : ''}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Test File: ${testFile}</h1>
+        <div class="file-info">
+            Individual test file execution
+        </div>
+        <a href="/html-test" class="nav-link">← Back to Test Runner</a>
+    </div>
+    
+    <div class="content">
+        <div class="todo">
+            <strong>🚧 Implementation Status:</strong> Individual test file loading is not yet implemented.
+            <br><br>
+            This endpoint will eventually load and serve the specific test file: <code>${testFile}</code>
+        </div>
+        
+        ${env.NODE_ENV === 'development' ? `
+        <div class="debug-info">
+            <strong>Debug Information:</strong><br>
+            Requested File: ${testFile}<br>
+            Environment: ${env.NODE_ENV}<br>
+            Test Directory: ${env.HTML_TEST_DIRECTORY || 'tests/html'}<br>
+            Timestamp: ${new Date().toISOString()}
+        </div>
+        ` : ''}
+    </div>
+</body>
+</html>

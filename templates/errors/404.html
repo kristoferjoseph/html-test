@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Not Found</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .error-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            margin: 20px;
+        }
+        .error-code {
+            font-size: 72px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 0;
+            line-height: 1;
+        }
+        .error-message {
+            font-size: 18px;
+            color: #666;
+            margin: 16px 0 24px 0;
+        }
+        .error-path {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #495057;
+            margin: 16px 0;
+        }
+        .nav-links {
+            margin-top: 32px;
+        }
+        .nav-link {
+            display: inline-block;
+            margin: 0 8px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .nav-link:hover {
+            background: #5a6fd8;
+        }
+        .nav-link.secondary {
+            background: #6c757d;
+        }
+        .nav-link.secondary:hover {
+            background: #5a6268;
+        }
+        ${env.NODE_ENV === 'development' ? `
+        .debug-info {
+            text-align: left;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 24px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        .debug-info strong {
+            color: #856404;
+        }
+        ` : ''}
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1 class="error-code">404</h1>
+        <p class="error-message">The requested page could not be found</p>
+        
+        <div class="error-path">
+            <strong>Path:</strong> ${requestPath || 'unknown'}
+        </div>
+        
+        <div class="nav-links">
+            <a href="/html-test" class="nav-link">🧪 Test Runner</a>
+            <a href="/" class="nav-link secondary">🏠 Home</a>
+        </div>
+        
+        ${env.NODE_ENV === 'development' ? `
+        <div class="debug-info">
+            <strong>Development Debug Info:</strong><br>
+            Requested Path: ${requestPath || 'Not provided'}<br>
+            Method: ${requestMethod || 'Not provided'}<br>
+            Timestamp: ${new Date().toISOString()}<br>
+            Available Routes:<br>
+            • GET /html-test (Main test runner)<br>
+            • GET /html-test/file/* (Individual test files)<br>
+            • GET /html-test/results.json (CI/CD JSON results)<br>
+            • GET /html-test/results.tap (CI/CD TAP results)
+        </div>
+        ` : ''}
+    </div>
+</body>
+</html>
